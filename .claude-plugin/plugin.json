@@ -1,0 +1,8 @@
+{
+  "name": "jpd-app-kit",
+  "description": "Scaffold a new web app end-to-end: local dev setup, AWS child account, optional Route53 domain, private GitHub repo, and a CodePipeline-driven CDK deployment. Reads ~/.config/jpd-app-kit/config.json.",
+  "version": "0.1.0",
+  "author": {
+    "name": "jpdixon"
+  }
+}

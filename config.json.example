@@ -1,0 +1,17 @@
+{
+  "_comment": "Copy this file to ~/.config/jpd-app-kit/config.json and fill in your values. The plugin reads from that path, not from this file.",
+
+  "aws": {
+    "mgt_account_id": "<YOUR_MGT_ACCOUNT_ID>",
+    "sso_start_url": "https://d-XXXXXXXXXX.awsapps.com/start",
+    "sso_region": "us-east-1",
+    "default_region": "us-east-1",
+    "sso_role_name": "AdministratorAccess",
+    "account_email_template": "you+{app_name}@example.com"
+  },
+  "github": {
+    "org": "<your-github-org>"
+  },
+  "developer_dir": "$HOME/Developer",
+  "developer_dir_symlinks": []
+}

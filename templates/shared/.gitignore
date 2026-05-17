@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+out/
+.next/
+.cache/
+.env
+.env.local
+.DS_Store
+*.log
+cdk/cdk.out/
+cdk/node_modules/
+cdk/*.js
+cdk/*.d.ts
+!cdk/jest.config.js
+.aws-sam/

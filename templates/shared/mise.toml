@@ -1,0 +1,27 @@
+[tools]
+node = "24.14.0"
+python = "3.12"
+
+[tasks.dev]
+description = "Start development server"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build for production"
+run = "npm run build"
+
+[tasks.lint]
+description = "Type-check / lint"
+run = "npm run lint"
+
+[tasks.install]
+description = "Install npm dependencies"
+run = "npm install"
+
+[tasks.aws-verify]
+description = "Verify AWS account identity"
+run = "aws sts get-caller-identity"
+
+[env]
+AWS_PROFILE = "{{AWS_PROFILE}}"
+AWS_DEFAULT_REGION = "us-east-1"

@@ -1,0 +1,3 @@
+# If someone keeps a real config.json next to the example for local testing,
+# don't commit it. The real config lives at ~/.config/jpd-app-kit/config.json.
+config.json
