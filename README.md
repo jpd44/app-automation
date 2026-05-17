@@ -186,7 +186,12 @@ Inside Claude:
 /jpd-app-kit:new-app
 ```
 
-The orchestrator gathers inputs in one prompt (app name, stack, optional domain, Cognito y/n, protected API y/n, LLM Lambda y/n), then runs through the workflow.
+The orchestrator gathers inputs in **two rounds**:
+
+- **Round 1 — infra shape:** app name, stack (Vite/Next.js), optional domain, Cognito y/n, protected API y/n, LLM Lambda y/n.
+- **Round 2 — what to build:** a free-text app description (e.g. *"joke website with language selector and culturally relative jokes"*), an optional **design reference URL** (Claude Designer, Stitch, Figma, etc.), and an optional **style reference URL** (an existing website whose visual language to mimic).
+
+The two-round split exists so creative inputs don't sit next to billable infra choices in the same prompt.
 
 ### What `/new-app` does, in order
 
@@ -194,8 +199,9 @@ The orchestrator gathers inputs in one prompt (app name, stack, optional domain,
 | - | --- | --- | --- |
 | 0 | Preflight | — | Verifies the config file, cwd, CLIs, `mgt` SSO, `gh` + configured-org membership, CDK reachable. Stops the run if anything fails. |
 | 1 | Local scaffold + `git init` | none | `./<app-name>/` with templates filled in, Vite/Next.js app scaffolded, `cdk/` copied with placeholders. |
-| 2 | **GitHub repo + initial commit** | none | Private `<github.org>/<app-name>` repo created via `gh`, scaffold pushed to `main`. *Happens before AWS provisioning so your code is versioned immediately, even if later steps fail.* |
-| 3 | AWS child account | **yes** | New `child-<app-name>` account via `aws organizations create-account` (run from `mgt`), polled to SUCCESS, then `~/.aws/config` is appended with the matching SSO profile. The new account ID is committed back to `cdk/bin/app.ts`. |
+| 1b | **First-cut implementation** | none | Fetches the design + style references (via WebFetch / Stitch MCP), extracts a short list of concrete design facts, and delegates to the `frontend-design` skill to produce a real first iteration of the app from your description. Stays inside the round-1 stack and feature choices. Build must succeed before continuing. |
+| 2 | **GitHub repo + initial commit** | none | Private `<github.org>/<app-name>` repo created via `gh`, scaffold + first-cut pushed to `main`. *Happens before AWS provisioning so your code is versioned immediately, even if later steps fail.* |
+| 3 | AWS child account | **yes** | New `child-<app-name>` account via `aws organizations create-account` (run from `mgt`), polled to SUCCESS. The skill then assigns your IAM Identity Center permission set to the new account (auto-discovers the principal from an existing child's assignment), appends a `child-<app>` profile to `~/.aws/config`, and commits the real account ID back into `cdk/bin/app.ts`. |
 | 4 | Route 53 domain | **yes** (skipped entirely if you said no) | Domain registered from `mgt`, hosted zone created in the child account, registrar pointed at the child zone's nameservers. |
 | 5 | CDK first deploy | **yes** | `cdk bootstrap` + `cdk diff` (shown for approval) + `cdk deploy` against the child account. Stack outputs (`SiteUrl`, `UserPoolId`, `ApiUrl`, etc.) are printed. If Cognito was selected, `.env.local` is written and the frontend auth bundle is committed. |
 | 6 | Wrap-up | — | Opens the project in your editor, prints the `AuthorizeConnectionUrl` you must click to finish wiring the CodeStar GitHub connection. |
